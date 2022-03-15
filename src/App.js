@@ -3,7 +3,6 @@ import TodoInsert from "./Components/TodoInsert";
 import TodoList from "./Components/TodoList";
 import TodoTemplate from "./Components/TodoTemplate";
 import { useRef, useCallback, useReducer, useEffect } from "react";
-import { parse } from "../../../../Library/Caches/typescript/4.6/node_modules/@babel/parser/typings/babel-parser";
 
 const todoReducer = (todos, action) => {
   let newTodos = []; //localStorage를 사용하기 위함
@@ -38,16 +37,16 @@ function App() {
   const nextId = useRef(0);
 
   useEffect(() => {
-    const localTodos = JSON.parse(localStorage.getItem("todo"));
+    const localTodos = localStorage.getItem("todo");
     if (localTodos) {
       const todolist = JSON.parse(localTodos).sort(
-        (a, b) => parseInt(b.id) - parseInt(a.id)
+        (a, b) => parseInt(a.id) - parseInt(b.id)
       );
       if (todolist.length >= 1) {
-        nextId.current = parseInt(todolist[0].id) + 1;
+        nextId.current = parseInt(todolist[todolist.length - 1].id) + 1;
       }
+      dispatch({ type: "INIT", data: todolist });
     }
-    dispatch({ type: "INIT", data: localTodos });
   }, []);
 
   const onInsert = useCallback((text) => {
